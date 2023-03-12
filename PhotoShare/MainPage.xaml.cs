@@ -1,96 +1,35 @@
 ﻿using System.Collections.ObjectModel;
 using System.Net;
 using System.Xml.Linq;
+using PhotoShare.Models;
+using PhotoShare.Views;
 using WebDav;
 
 namespace PhotoShare;
 
 public partial class MainPage : ContentPage
 {
-    protected static IWebDavClient client;
-
-    protected static ImageFetcher imageFetcher;
-
-    protected static string sharingKey;
-
+    protected StorageClient StorageClient;
 
     public MainPage()
     {
-        sharingKey = "t2tqiAFNewekiTq";
-
-        WebDavClientParams clientParams = new WebDavClientParams
-        {
-            BaseAddress = new Uri("https://cloud.h-software.de/"),
-            Credentials = new NetworkCredential(sharingKey, "")
-        };
-        client = new WebDavClient(clientParams);
-
-
+        StorageClient = new StorageClient(new Uri("https://cloud.h-software.de"), "t2tqiAFNewekiTq");
 
         InitializeComponent();
 
+        // TODO: Open root folder page, if Nextcloud share link is stored
+        Navigation.PushAsync(new FolderPage(new Folder(StorageClient)));
+
         // Load images
         //Task task = getPhotoList();
-    }
-
-	private async Task getPhotoList()
-	{
-        var propfindParams = new PropfindParameters
-        {
-            RequestType = PropfindRequestType.NamedProperties,
-
-            Namespaces = new[]
-            {
-                new NamespaceAttr("oc", "http://owncloud.org/ns"),
-                new NamespaceAttr("nc", "http://nextcloud.org/ns"),
-                new NamespaceAttr("ocs", "http://open-collaboration-services.org/ns"),
-            },
-
-            CustomProperties = new[]
-            {
-                XName.Get("fileid", "http://owncloud.org/ns"),
-                XName.Get("displayname", "DAV:")
-            }
-        };
+        /*
         
-        var result = await client.Propfind("https://cloud.h-software.de/public.php/webdav/", propfindParams);
-        if (result.IsSuccessful)
-		{
-            bool first = true;
-            // Show images
-            foreach (WebDavResource imageData in result.Resources)
-            {
-                // Show current folder on top
-                if (first) {
-                    first = false;
-                    this.CurrentFolder.Text = imageData.DisplayName;
-                    continue;
-                }
+        */
+    }   
 
-                string fileid = "";
-                foreach (var property in imageData.Properties)
-                {
-
-                }
-                ClickableImage image = new ClickableImage(imageData.DisplayName, fileid, imageFetcher);
-                Application.Current.Dispatcher.Dispatch(() =>
-                {
-                        this.Gallery.Children.Add(image);
-                });
-                //ImageListWrapper.Append(image);
-            }
-
-            //ImageList.CollectionChanged += ImageList_CollectionChanged;
-        }
-        else
-		{
-            // handle an error
-		}
-    }
-
-    private void ImageList_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+    void Button_Clicked(System.Object sender, System.EventArgs e)
     {
-        throw new NotImplementedException();
+        Navigation.PushAsync(new FolderPage(new Folder(StorageClient)));
     }
 }
 

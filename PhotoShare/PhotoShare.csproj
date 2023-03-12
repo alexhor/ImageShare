@@ -56,4 +56,15 @@
 		<PackageReference Include="WebDav.Client" Version="2.8.0" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <None Remove="Resources\Images\Luca_03.jpeg" />
+	  <None Remove="Resources\Images\Luca_02.jpeg" />
+	  <None Remove="Resources\Images\Luca_01.jpeg" />
+	  <None Remove="Views\" />
+	  <None Remove="Models\" />
+	</ItemGroup>
+	<ItemGroup>
+	  <Folder Include="Views\" />
+	  <Folder Include="Models\" />
+	</ItemGroup>
 </Project>
