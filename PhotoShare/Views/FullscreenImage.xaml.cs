@@ -10,16 +10,27 @@ public partial class FullscreenImage : ContentPage
 		InitializeComponent();
 		Title = item.Name;
 
-		Stream stream = storageClient.GetFullSize(item);
+		Task task = LoadImage(item, storageClient);
+    }
 
-		PinchZoom pinchZoom = new PinchZoom()
+	private async Task LoadImage(Item item, StorageClient storageClient)
+    {
+		Stream stream = await storageClient.GetFullSize(item);
+
+        Image image = new Image()
 		{
-			Content = new Image()
-			{
-				Source = ImageSource.FromStream(() => stream),
-			}
+			Source = ImageSource.FromStream(() => stream),
 		};
 
-		this.Content = pinchZoom;
+
+        PinchZoom pinchZoom = new PinchZoom()
+		{
+			Content = image,
+        };
+
+
+
+		//Wrapper.Children.Add(pinchZoom);
+		Content = pinchZoom;
 	}
 }
