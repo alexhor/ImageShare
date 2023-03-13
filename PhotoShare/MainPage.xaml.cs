@@ -19,12 +19,6 @@ public partial class MainPage : ContentPage
 
         // TODO: Open root folder page, if Nextcloud share link is stored
         Navigation.PushAsync(new FolderPage(new Folder(StorageClient)));
-
-        // Load images
-        //Task task = getPhotoList();
-        /*
-        
-        */
     }   
 
     void Button_Clicked(System.Object sender, System.EventArgs e)

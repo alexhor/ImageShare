@@ -19,5 +19,10 @@ namespace PhotoShare.Models
                 yield return new ClickableImage(item, StorageClient);
             }
 		}
+
+		public async Task<bool> UploadImage(string name, Stream content, string contentType)
+		{
+			return await StorageClient.UploadImage(this, name, content, contentType);
+		}
 	}
 }

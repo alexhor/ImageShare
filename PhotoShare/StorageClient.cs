@@ -49,7 +49,8 @@ namespace PhotoShare
             CustomProperties = new[]
                 {
                     XName.Get("fileid", "http://owncloud.org/ns"),
-                    XName.Get("displayname", "DAV:")
+                    XName.Get("displayname", "DAV:"),
+                    XName.Get("getlastmodified", "DAV:"),
                 }
         };
 
@@ -99,12 +100,11 @@ namespace PhotoShare
         /// </summary>
         /// <param name="item">Image to fetch</param>
         /// <returns>Full size stream of the image</returns>
-        public Stream GetFullSize(Item item)
+        public async Task<Stream> GetFullSize(Item item)
         {
             Uri uri = new Uri(new Uri(WebdavUri, item.ParentFolder.Directory), item.Name);
-            Task<WebDavStreamResponse> response = WebdavClient.GetRawFile(uri);
-            response.Wait();
-            return response.Result.Stream;
+            WebDavStreamResponse response = await WebdavClient.GetRawFile(uri);
+            return response.Stream;
         }
 
         /// <summary>
@@ -146,5 +146,19 @@ namespace PhotoShare
             yield break;
         }
 
+        /// <summary>
+        /// Upload an image to a folder
+        /// </summary>
+        /// <param name="folder">Folder to upload to</param>
+        /// <param name="filename">Name of uploaded file</param>
+        /// <param name="fileContent">Content of file to upload</param>
+        /// <param name="contentType">Content type of file</param>
+        /// <returns>Success or failure</returns>
+        public async Task<bool> UploadImage(Folder folder, string filename, Stream fileContent, string contentType)
+        {
+            Uri fileUri = new Uri(new Uri(WebdavUri, folder.Directory), filename);
+            WebDavResponse response = await WebdavClient.PutFile(fileUri, fileContent);
+            return response.IsSuccessful;
+        }
     }
 }
