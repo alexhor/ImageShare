@@ -1,4 +1,6 @@
 ﻿using PhotoShare.Models;
+using CommunityToolkit.Maui.Alerts;
+using CommunityToolkit.Maui.Core;
 
 namespace PhotoShare.Views;
 
@@ -31,11 +33,6 @@ public partial class FolderPage : ContentPage
         activityIndicator.IsRunning = false;
     }
 
-    void ToggleAddItemMenu(System.Object sender, System.EventArgs e)
-    {
-        AddItemMenu.IsVisible = !AddItemMenu.IsVisible;
-    }
-
     void TakePicture(System.Object sender, System.EventArgs e)
     {
         // TODO: add permissions request for Android
@@ -43,16 +40,37 @@ public partial class FolderPage : ContentPage
 
         photoResult.ContinueWith((task) =>
         {
+            // Show user that upload is in progress
+            ISnackbar snackbar = Snackbar.Make("Uploading photo ...", duration: TimeSpan.MaxValue);
+            Application.Current.Dispatcher.Dispatch(() =>
+            {
+                snackbar.Show();
+            });
+
+            // Upload file
             string fileName = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
             Task<Stream> photoStream = task.Result.OpenReadAsync();
             photoStream.Wait();
             fileName += Path.GetExtension(task.Result.FileName);
-            Task uploadTask = folder.UploadImage(fileName, photoStream.Result, task.Result.ContentType);
-        });
-    }
+            Task<bool> uploadTask = folder.UploadImage(fileName, photoStream.Result, task.Result.ContentType);
 
-    void SelectFromLibrary(System.Object sender, System.EventArgs e)
-    {
-        // TODO: add permissions request for Android
+            // Show message when file was uploaded
+            uploadTask.ContinueWith((task) =>
+            {
+                Application.Current.Dispatcher.Dispatch(() =>
+                {
+                    snackbar.Dismiss();
+                });
+                string text = task.Result ? "Photo uploaded" : "Photo uploading failed";
+                ToastDuration duration = ToastDuration.Short;
+                double fontSize = 14;
+
+                Application.Current.Dispatcher.Dispatch(() =>
+                {
+                    var toast = Toast.Make(text, duration, fontSize);
+                    toast.Show();
+                });
+            });
+        });
     }
 }

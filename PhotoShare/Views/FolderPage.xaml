@@ -41,31 +41,8 @@
                 CornerRadius="20"
                 Padding="2, 0"
                 Text="+"
-                Clicked="ToggleAddItemMenu">
+                Clicked="TakePicture">
             </Button>
-
-            <VerticalStackLayout
-                x:Name="AddItemMenu"
-                IsVisible="False"
-                AbsoluteLayout.LayoutBounds="30, -45">
-
-                <VerticalStackLayout.Resources>
-                    <Style TargetType="Button">
-                        <Setter Property="Padding" Value="10, 0" />
-                        <Setter Property="CornerRadius" Value="0" />
-                        <Setter Property="BackgroundColor" Value="LightGray" />
-                        <Setter Property="TextColor" Value="Black" />
-                    </Style>
-                </VerticalStackLayout.Resources>
-
-                <Button
-                    Clicked="TakePicture"
-                    Text="Take picture"/>
-                <Button
-                    Clicked="TakePicture"
-                    Text="Add from gallery"/>
-            </VerticalStackLayout>
-
         </AbsoluteLayout>
     </AbsoluteLayout>
 </ContentPage>

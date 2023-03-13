@@ -28,8 +28,6 @@ public partial class FullscreenImage : ContentPage
 			Content = image,
         };
 
-
-
 		//Wrapper.Children.Add(pinchZoom);
 		Content = pinchZoom;
 	}
