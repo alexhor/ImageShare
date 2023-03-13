@@ -4,6 +4,7 @@ using System.Net;
 using System.Web;
 using System.Xml.Linq;
 using PhotoShare.Models;
+using SkiaSharp;
 using WebDav;
 
 namespace PhotoShare
@@ -156,9 +157,21 @@ namespace PhotoShare
         /// <returns>Success or failure</returns>
         public async Task<bool> UploadImage(Folder folder, string filename, Stream fileContent, string contentType)
         {
+            filename += ".jpeg";
+            Stream compressedContent = CompressImageStream(fileContent);
+
             Uri fileUri = new Uri(new Uri(WebdavUri, folder.Directory), filename);
-            WebDavResponse response = await WebdavClient.PutFile(fileUri, fileContent);
+            WebDavResponse response = await WebdavClient.PutFile(fileUri, compressedContent);
             return response.IsSuccessful;
+        }
+
+        public Stream CompressImageStream(Stream stream, int quality=85)
+        {
+            SKBitmap sourceBitmap = SKBitmap.Decode(stream);
+            SKImage scaledImage = SKImage.FromBitmap(sourceBitmap);
+            SKData imageData = scaledImage.Encode(SKEncodedImageFormat.Jpeg, quality);
+
+            return imageData.AsStream(true);
         }
     }
 }

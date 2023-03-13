@@ -51,7 +51,7 @@ public partial class FolderPage : ContentPage
             string fileName = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
             Task<Stream> photoStream = task.Result.OpenReadAsync();
             photoStream.Wait();
-            fileName += Path.GetExtension(task.Result.FileName);
+
             Task<bool> uploadTask = folder.UploadImage(fileName, photoStream.Result, task.Result.ContentType);
 
             // Show message when file was uploaded
