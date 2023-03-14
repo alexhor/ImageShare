@@ -158,14 +158,14 @@ namespace PhotoShare
         public async Task<bool> UploadImage(Folder folder, string filename, Stream fileContent, string contentType)
         {
             filename += ".jpeg";
-            Stream compressedContent = CompressImageStream(fileContent);
+            Stream compressedContent = StorageClient.CompressImageStream(fileContent);
 
             Uri fileUri = new Uri(new Uri(WebdavUri, folder.Directory), filename);
             WebDavResponse response = await WebdavClient.PutFile(fileUri, compressedContent);
             return response.IsSuccessful;
         }
 
-        public Stream CompressImageStream(Stream stream, int quality=85)
+        public static Stream CompressImageStream(Stream stream, int quality=85)
         {
             SKBitmap sourceBitmap = SKBitmap.Decode(stream);
             SKImage scaledImage = SKImage.FromBitmap(sourceBitmap);
