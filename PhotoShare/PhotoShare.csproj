@@ -15,7 +15,7 @@
 		<ApplicationTitle>PhotoShare</ApplicationTitle>
 
 		<!-- App Identifier -->
-		<ApplicationId>com.companyname.photoshare</ApplicationId>
+		<ApplicationId>de.dennenmoser.alexander.photoshare</ApplicationId>
 		<ApplicationIdGuid>1d5cea99-a4fb-4e6c-90d7-fa6f38ba90bd</ApplicationIdGuid>
 
 		<!-- Versions -->
@@ -32,9 +32,13 @@
 
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net7.0-ios|AnyCPU'">
 	  <CreatePackage>false</CreatePackage>
+	  <CodesignProvision>Automatisch</CodesignProvision>
+	  <CodesignKey>iPhone Developer</CodesignKey>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net7.0-ios|AnyCPU'">
 	  <CreatePackage>false</CreatePackage>
+	  <CodesignKey>Apple Distribution: Alexander Dennenmoser (U8A937AVDV)</CodesignKey>
+	  <CodesignProvision>ImageShare_Distribution_AppStore</CodesignProvision>
 	</PropertyGroup>
 	<ItemGroup>
 		<!-- App Icon -->
@@ -44,10 +48,6 @@
 		<MauiSplashScreen Include="Resources\Splash\splash.svg" Color="#512BD4" BaseSize="128,128" />
 
 		<!-- Images -->
-		<MauiImage Include="Resources\Images\*" />
-		<MauiImage Update="Resources\Images\dotnet_bot.svg" BaseSize="168,208" />
-
-		<!-- Custom Fonts -->
 		<MauiFont Include="Resources\Fonts\*" />
 
 		<!-- Raw Assets (also remove the "Resources\Raw" prefix) -->
@@ -67,9 +67,13 @@
 	  <None Remove="Resources\Images\Luca_01.jpeg" />
 	  <None Remove="Views\" />
 	  <None Remove="Models\" />
+	  <None Remove="Resources\Images\.DS_Store" />
 	</ItemGroup>
 	<ItemGroup>
 	  <Folder Include="Views\" />
 	  <Folder Include="Models\" />
+	</ItemGroup>
+	<ItemGroup>
+	  <BundleResource Include="Resources\Images\.DS_Store" />
 	</ItemGroup>
 </Project>
