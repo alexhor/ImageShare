@@ -65,12 +65,13 @@ namespace PhotoShare
             SharingKey = sharingKey;
             ServerBaseUri = baseAddress;
 
-            HttpClientHandler handler = new HttpClientHandler
+            SocketsHttpHandler handler = new SocketsHttpHandler
             {
                 Credentials = new NetworkCredential(SharingKey, ""),
+                AutomaticDecompression = DecompressionMethods.Deflate | DecompressionMethods.GZip,
             };
 
-            HttpClient = new HttpClient(handler)
+            HttpClient = new HttpClient(handler, true)
             {
                 BaseAddress = ServerBaseUri,
             };
@@ -115,7 +116,17 @@ namespace PhotoShare
         /// <returns>All items in this folder</returns>
         public async IAsyncEnumerable<Item> GetChildList(Folder parentFolder)
         {
-            var result = await WebdavClient.Propfind(WebdavUri, propfindParams);
+            PropfindResponse result;
+            try
+            {
+                result = await WebdavClient.Propfind(WebdavUri, propfindParams);
+            }
+            catch
+            {
+                // TODO: notify user about failed loading
+                yield break;
+            }
+            
             if (result.IsSuccessful)
             {
                 bool first = true;
