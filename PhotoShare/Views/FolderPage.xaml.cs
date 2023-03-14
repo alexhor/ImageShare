@@ -40,6 +40,10 @@ public partial class FolderPage : ContentPage
 
         photoResult.ContinueWith((task) =>
         {
+            // Catch taking photo was cancled
+            if (null == task.Result)
+                return;
+
             // Show user that upload is in progress
             ISnackbar snackbar = Snackbar.Make("Uploading photo ...", duration: TimeSpan.MaxValue);
             Application.Current.Dispatcher.Dispatch(() =>
