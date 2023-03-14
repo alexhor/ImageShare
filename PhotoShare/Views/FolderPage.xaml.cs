@@ -35,7 +35,6 @@ public partial class FolderPage : ContentPage
 
     void TakePicture(System.Object sender, System.EventArgs e)
     {
-        // TODO: add permissions request for Android
         Task<FileResult> photoResult = MediaPicker.Default.CapturePhotoAsync();
 
         photoResult.ContinueWith((task) =>
