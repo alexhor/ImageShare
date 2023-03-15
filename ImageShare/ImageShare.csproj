@@ -43,6 +43,13 @@
 	<PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
 	  <WarningLevel>4</WarningLevel>
 	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net7.0-android|AnyCPU'">
+	  <AndroidKeyStore>True</AndroidKeyStore>
+	  <AndroidSigningKeyStore>/Users/privat/Nextcloud/GooglePlaystore.keystore</AndroidSigningKeyStore>
+	  <AndroidSigningKeyAlias>key</AndroidSigningKeyAlias>
+	  <AndroidSigningKeyPass></AndroidSigningKeyPass>
+	  <AndroidSigningStorePass></AndroidSigningStorePass>
+	</PropertyGroup>
 	<ItemGroup>
 		<!-- App Icon -->
 		<MauiIcon Include="Resources\AppIcon\appicon.png" Color="#f6f6eb" />
@@ -73,6 +80,7 @@
 	  <None Remove="Resources\Images\.DS_Store" />
 	  <None Remove="Resources\Splash\.DS_Store" />
 	  <None Remove="Resources\AppIcon\.DS_Store" />
+	  <None Remove="Resources\AppIcon\appicon.svg" />
 	</ItemGroup>
 	<ItemGroup>
 	  <Folder Include="Views\" />
@@ -82,5 +90,6 @@
 	  <BundleResource Include="Resources\Images\.DS_Store" />
 	  <BundleResource Include="Resources\Splash\.DS_Store" />
 	  <BundleResource Include="Resources\AppIcon\.DS_Store" />
+	  <BundleResource Include="Resources\AppIcon\appicon.svg" />
 	</ItemGroup>
 </Project>
