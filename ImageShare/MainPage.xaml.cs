@@ -1,5 +1,6 @@
 ﻿using System.Collections.ObjectModel;
 using System.Net;
+using System.Windows.Input;
 using System.Xml.Linq;
 using ImageShare.Models;
 using ImageShare.Views;
@@ -44,6 +45,12 @@ public partial class MainPage : ContentPage
     {
         Preferences.Default.Set("nextcloud_share_url", NextcloudSharingLink.Text);
         OpenFolder();
+    }
+
+    void OpenPrivacyPolicy(System.Object sender, System.EventArgs e)
+    {
+        string url = "https://h-software.de/privacy-policy.html";
+        Launcher.OpenAsync(url);
     }
 }
 

@@ -23,6 +23,14 @@
                 Text="Open Folder"
                 Clicked="Button_Clicked"
                 Margin="0, 10"/>
+
+
+
+            <Button
+                Text="Privacy Policy"
+                TextColor="Blue"
+                BackgroundColor="Transparent"
+                Clicked="OpenPrivacyPolicy"/>
         </VerticalStackLayout>
     </ScrollView>
 </ContentPage>
