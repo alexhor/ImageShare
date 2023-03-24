@@ -6,7 +6,9 @@
     <AbsoluteLayout>
         <ScrollView
             AbsoluteLayout.LayoutBounds="0,0,1,1"
-            AbsoluteLayout.LayoutFlags="SizeProportional">
+            AbsoluteLayout.LayoutFlags="All"
+            VerticalOptions="Start"
+            x:Name="ScrollWrapper">
             <VerticalStackLayout>
                 <FlexLayout
                     x:Name="Gallery"
@@ -32,17 +34,15 @@
             </VerticalStackLayout>
         </ScrollView>
 
-        <AbsoluteLayout
-            AbsoluteLayout.LayoutBounds="0.07,0.99,100,25"
-            AbsoluteLayout.LayoutFlags="PositionProportional">
-            <Button
-                FontSize="25"
-                FontAttributes="Bold"
-                CornerRadius="20"
-                Padding="2, 0"
-                Text="+"
-                Clicked="TakePicture">
-            </Button>
-        </AbsoluteLayout>
+        <Button
+            AbsoluteLayout.LayoutBounds="5, 0.98, 50, 50"
+            AbsoluteLayout.LayoutFlags="YProportional"
+            FontSize="25"
+            FontAttributes="Bold"
+            CornerRadius="20"
+            Padding="2, 0"
+            Text="+"
+            Clicked="TakePicture">
+        </Button>
     </AbsoluteLayout>
 </ContentPage>

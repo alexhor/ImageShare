@@ -30,7 +30,12 @@ public partial class FolderPage : ContentPage
         }
 
         // Stop indicating loading
-        activityIndicator.IsRunning = false;
+        Application.Current.Dispatcher.Dispatch(() =>
+        {
+            activityIndicator.IsRunning = false;
+            // This makes image buttons work that are initially located beyond the screen borders
+            ScrollWrapper.VerticalOptions = LayoutOptions.Fill;
+        });
     }
 
     void TakePicture(System.Object sender, System.EventArgs e)
