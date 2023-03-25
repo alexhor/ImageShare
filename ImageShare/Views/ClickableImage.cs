@@ -5,6 +5,8 @@ namespace ImageShare
 {
 	public class ClickableImage
     {
+		private static Stream imagePlaceholder;
+
 		private Item Item;
 		private StorageClient StorageClient;
 		private ImageButton Button;
@@ -29,16 +31,30 @@ namespace ImageShare
 				return Button;
 
 			// Create new view
-            Stream imageStream = StorageClient.GetPreview(Item);
 			Button = new ImageButton()
 			{
-				Source = ImageSource.FromStream(() => imageStream),
+				// Set image placeholder
+				Source = ImageSource.FromFile("image_placeholder.png")
 			};
             Button.Clicked += DoImageClickedAction;
 
 
 			return Button;
 		}
+
+		public void DownloadPreviewImage()
+		{
+			if (null == Button)
+				return;
+			// Download preview
+			Stream imageStream = StorageClient.GetPreview(Item);
+			ImageSource imageSource = ImageSource.FromStream(() => imageStream);
+            // Replace image source
+            Application.Current.Dispatcher.Dispatch(() =>
+			{
+				Button.Source = imageSource;
+			});
+        }
 
         private void DoImageClickedAction(object sender, EventArgs e)
         {

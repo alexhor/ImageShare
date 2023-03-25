@@ -8,6 +8,8 @@ public partial class FolderPage : ContentPage
 {
 	protected Folder folder;
 
+    private Queue<ClickableImage> PreviewsLeftToLoad = new Queue<ClickableImage>();
+
 	public FolderPage(Folder folder)
 	{
 		this.folder = folder;
@@ -19,14 +21,17 @@ public partial class FolderPage : ContentPage
     }
 
     public async Task LoadFolderContent()
-	{
+    {
         await foreach (ClickableImage image in folder.GetImages())
         {
             image.SetParentNavigation(Navigation);
+            View imageView = image.GetView();
+
             Application.Current.Dispatcher.Dispatch(() =>
             {
-                Gallery.Children.Add(image.GetView());
+                Gallery.Children.Add(imageView);
             });
+            PreviewsLeftToLoad.Enqueue(image);
         }
 
         // Stop indicating loading
@@ -36,6 +41,23 @@ public partial class FolderPage : ContentPage
             // This makes image buttons work that are initially located beyond the screen borders
             ScrollWrapper.VerticalOptions = LayoutOptions.Fill;
         });
+
+        // Load previews
+        Task task = LoadPreviews();
+    }
+
+    private async Task LoadPreviews()
+    {
+        // Continue with loading the image previews
+        while (0 < PreviewsLeftToLoad.Count)
+        {
+            ClickableImage image = PreviewsLeftToLoad.Dequeue();
+            Task task = Task.Run(() =>
+            {
+                image.DownloadPreviewImage();
+            });
+            await task.ConfigureAwait(true);
+        }
     }
 
     void TakePicture(System.Object sender, System.EventArgs e)

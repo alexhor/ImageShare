@@ -85,6 +85,8 @@
 	  <None Remove="Resources\Splash\.DS_Store" />
 	  <None Remove="Resources\AppIcon\.DS_Store" />
 	  <None Remove="Resources\AppIcon\appicon.svg" />
+	  <None Remove="Resources\Images\image_placeholder.drawio" />
+	  <None Remove="Resources\Images\image_placeholder.svg" />
 	</ItemGroup>
 	<ItemGroup>
 	  <Folder Include="Views\" />
@@ -95,5 +97,8 @@
 	  <BundleResource Include="Resources\Splash\.DS_Store" />
 	  <BundleResource Include="Resources\AppIcon\.DS_Store" />
 	  <BundleResource Include="Resources\AppIcon\appicon.svg" />
+	</ItemGroup>
+	<ItemGroup>
+	  <MauiImage Include="Resources\Images\image_placeholder.svg" />
 	</ItemGroup>
 </Project>
