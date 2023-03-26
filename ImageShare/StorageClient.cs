@@ -129,17 +129,12 @@ namespace ImageShare
             
             if (result.IsSuccessful)
             {
-                bool first = true;
-                // Show images
-                foreach (WebDavResource imageData in result.Resources)
-                {
-                    // Skip current folder
-                    if (first)
-                    {
-                        first = false;
-                        continue;
-                    }
+                // Skip current folder
+                IEnumerable<WebDavResource> imageList = result.Resources.Skip(1).Reverse();
 
+                // Show images
+                foreach (WebDavResource imageData in imageList)
+                {
                     string fileid = "";
                     foreach (var property in imageData.Properties)
                     {
