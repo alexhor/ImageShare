@@ -1,4 +1,6 @@
-﻿namespace Bertuzzi.MAUI.PinchZoomImage
+﻿using ImageShare.Views;
+
+namespace Bertuzzi.MAUI.PinchZoomImage
 {
     /// <summary>
     /// PinchZoom View from TBertuzzi:
@@ -12,8 +14,12 @@
         private double _yOffset = 0;
         private bool _secondDoubleTapp = false;
 
-        public PinchZoom()
+        private FullscreenImage fullscreenImageView;
+
+        public PinchZoom(FullscreenImage fullscreenImage)
         {
+            fullscreenImageView = fullscreenImage;
+
             var pinchGesture = new PinchGestureRecognizer();
             pinchGesture.PinchUpdated += PinchUpdated;
             GestureRecognizers.Add(pinchGesture);
@@ -67,10 +73,47 @@
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        protected void NextImage()
+        {
+            if (LoadingDifferentImage)
+                return;
+            LoadingDifferentImage = fullscreenImageView.NextImage();
+        }
+        private bool LoadingDifferentImage = false;
+        private bool LeftSideTouched = false;
+        private DateTime LeftSideTouchedSince = DateTime.MinValue;
+        private TimeSpan SideTouchedTimeout = new TimeSpan(2000000);
+
+        /// <summary>
+        /// 
+        /// </summary>
+        protected void PreviousImage()
+        {
+            if (LoadingDifferentImage)
+                return;
+            LoadingDifferentImage = fullscreenImageView.PreviousImage();
+
+        }
+        private bool RightSideTouched = false;
+        private DateTime RightSideTouchedSince = DateTime.MinValue;
+
         public void OnPanUpdated(object sender, PanUpdatedEventArgs e)
         {
             if (Content.Scale == 1)
             {
+                // Next image
+                if (0 > e.TotalX)
+                {
+                    NextImage();
+                }
+                // Previous image
+                else if (0 < e.TotalX)
+                {
+                    PreviousImage();
+                }
                 return;
             }
 
@@ -92,14 +135,40 @@
                         var minX = (width - (Application.Current.MainPage.Width / 2)) * -1;
                         var maxX = Math.Min(Application.Current.MainPage.Width / 2, width / 2);
 
-                        if (newX < minX)
+                        if (newX <= minX)
                         {
+                            // Next image
+                            if (RightSideTouched && DateTime.Now > RightSideTouchedSince.Add(SideTouchedTimeout))
+                            {
+                                NextImage();
+                                return;
+                            }
+
                             newX = minX;
+                            RightSideTouched = true;
+                            RightSideTouchedSince = DateTime.Now;
+                        }
+                        else
+                        {
+                            RightSideTouched = false;
                         }
 
-                        if (newX > maxX)
+                        if (newX >= maxX)
                         {
+                            // Next image
+                            if (LeftSideTouched && DateTime.Now > LeftSideTouchedSince.Add(SideTouchedTimeout))
+                            {
+                                PreviousImage();
+                                return;
+                            }
+
                             newX = maxX;
+                            LeftSideTouched = true;
+                            LeftSideTouchedSince = DateTime.Now;
+                        }
+                        else
+                        {
+                            LeftSideTouched = false;
                         }
                     }
                     else
