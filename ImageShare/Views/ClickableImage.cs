@@ -3,11 +3,9 @@ using ImageShare.Models;
 
 namespace ImageShare
 {
-	public class ClickableImage
+	public class ClickableImage : IEquatable<ClickableImage>
     {
-		private static Stream imagePlaceholder;
-
-		private Item Item;
+		public Item Item { get; private set; }
 		private StorageClient StorageClient;
 		private ImageButton Button;
 		
@@ -61,6 +59,11 @@ namespace ImageShare
 			if (null == Navigation)
 				return;
             Navigation.PushAsync(new Views.FullscreenImage(Item, StorageClient));
+        }
+
+        public bool Equals(ClickableImage other)
+        {
+			return this.Item.Equals(other.Item);
         }
     }
 }

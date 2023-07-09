@@ -3,6 +3,10 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="ImageShare.Views.FolderPage"
              Title="FolderPage">
+    <ContentPage.ToolbarItems>
+        <ToolbarItem Clicked="ReloadButton_Clicked" IconImageSource="reload.png" />
+    </ContentPage.ToolbarItems>
+
     <AbsoluteLayout>
         <ScrollView
             AbsoluteLayout.LayoutBounds="0,0,1,1"
@@ -10,6 +14,11 @@
             VerticalOptions="Start"
             x:Name="ScrollWrapper">
             <VerticalStackLayout>
+                <ActivityIndicator
+                    x:Name="activityIndicator"
+                    IsRunning="True"
+                    VerticalOptions="End" />
+
                 <FlexLayout
                     x:Name="Gallery"
                     JustifyContent="Start"
@@ -26,11 +35,6 @@
                         </Style>
                     </FlexLayout.Resources>
                 </FlexLayout>
-
-                <ActivityIndicator
-                    x:Name="activityIndicator"
-                    IsRunning="True"
-                    VerticalOptions="End" />
             </VerticalStackLayout>
         </ScrollView>
 

@@ -71,7 +71,7 @@
 	<ItemGroup>
 		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="7.0.0" />
 		<PackageReference Include="WebDav.Client" Version="2.8.0" />
-		<PackageReference Include="CommunityToolkit.Maui" Version="5.0.0" />
+		<PackageReference Include="CommunityToolkit.Maui" Version="5.2.0" />
 		<PackageReference Include="SkiaSharp" Version="2.88.3" />
 	</ItemGroup>
 
@@ -87,6 +87,7 @@
 	  <None Remove="Resources\AppIcon\appicon.svg" />
 	  <None Remove="Resources\Images\image_placeholder.drawio" />
 	  <None Remove="Resources\Images\image_placeholder.svg" />
+	  <None Remove="Resources\Images\reload.png" />
 	</ItemGroup>
 	<ItemGroup>
 	  <Folder Include="Views\" />
@@ -100,5 +101,6 @@
 	</ItemGroup>
 	<ItemGroup>
 	  <MauiImage Include="Resources\Images\image_placeholder.svg" />
+	  <MauiImage Include="Resources\Images\reload.png" />
 	</ItemGroup>
 </Project>

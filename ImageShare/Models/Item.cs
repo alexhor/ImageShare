@@ -1,7 +1,7 @@
 ﻿using System;
 namespace ImageShare.Models
 {
-    public class Item
+    public class Item : IEquatable<Item>
     {
         public Folder ParentFolder { get; private set; }
 
@@ -34,6 +34,11 @@ namespace ImageShare.Models
         public Item GetPreviousImage()
         {
             return ParentFolder.GetPreviousImage(this);
+        }
+
+        public bool Equals(Item other)
+        {
+            return this.Fileid == other.Fileid;
         }
     }
 }

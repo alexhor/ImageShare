@@ -5,8 +5,8 @@ namespace ImageShare.Models
 	public class Folder
 	{
 		public string Directory { get; protected set; }
-		protected StorageClient StorageClient;
-		protected IList<Item> imageList = new List<Item>();
+		public StorageClient StorageClient;
+		protected List<Item> imageList = new List<Item>();
 
 		public Folder(StorageClient storageClient, string directory = "")
 		{
@@ -14,12 +14,13 @@ namespace ImageShare.Models
             StorageClient = storageClient;
 		}
 
-		public async IAsyncEnumerable<ClickableImage> GetImages()
+		public async IAsyncEnumerable<Item> GetImages()
 		{
-			await foreach (Item item in StorageClient.GetChildList(this))
+			imageList.Clear();
+            await foreach (Item item in StorageClient.GetChildList(this))
 			{
 				imageList.Add(item);
-                yield return new ClickableImage(item, StorageClient);
+				yield return item;
             }
 		}
 

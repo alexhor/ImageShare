@@ -7,6 +7,7 @@ namespace ImageShare.Views;
 public partial class FolderPage : ContentPage
 {
 	protected Folder folder;
+    private List<ClickableImage> clickableImageList = new List<ClickableImage>();
 
     private Queue<ClickableImage> PreviewsLeftToLoad = new Queue<ClickableImage>();
 
@@ -20,18 +21,54 @@ public partial class FolderPage : ContentPage
         Task task = LoadFolderContent();
     }
 
-    public async Task LoadFolderContent()
+    private async Task LoadFolderContent()
     {
-        await foreach (ClickableImage image in folder.GetImages())
-        {
-            image.SetParentNavigation(Navigation);
-            View imageView = image.GetView();
+        int clickableImageListIndex = 0;
 
-            Application.Current.Dispatcher.Dispatch(() =>
+        // Start indicating loading
+        Application.Current.Dispatcher.Dispatch(() =>
+        {
+            activityIndicator.IsRunning = true;
+        });
+
+        await foreach (Item item in folder.GetImages())
+        {
+            int itemIndex;
+            // If the end of the list was reached, add additional items at the end
+            if (clickableImageListIndex >= clickableImageList.Count)
             {
-                Gallery.Children.Add(imageView);
-            });
-            PreviewsLeftToLoad.Enqueue(image);
+                AddImage(item, clickableImageListIndex);
+                clickableImageListIndex++;
+            }
+            // If this item exists at this position, do nothing
+            else if (clickableImageList[clickableImageListIndex].Item.Equals(item))
+            {
+                clickableImageListIndex++;
+            }
+            // If this item exists later, delete from the list until the items position
+            else if (-1 != (itemIndex = clickableImageList.FindIndex(i => i.Item.Equals(item))))
+            {
+                if (itemIndex <= clickableImageListIndex)
+                    throw new IndexOutOfRangeException();
+                for (int i = 0; i < itemIndex - clickableImageListIndex; i++)
+                {
+                    DeleteImage(clickableImageListIndex);
+                }
+                clickableImageListIndex++;
+            }
+            // If this item doesn't exist in the list, insert at current position
+            else
+            {
+                AddImage(item, clickableImageListIndex);
+                clickableImageListIndex++;
+            }
+        }
+
+        // Delete from end of list
+        while (clickableImageListIndex < clickableImageList.Count)
+        {
+            DeleteImage(clickableImageListIndex);
+            clickableImageListIndex++;
         }
 
         // Stop indicating loading
@@ -44,6 +81,35 @@ public partial class FolderPage : ContentPage
 
         // Load previews
         Task task = LoadPreviews();
+
+        // TODO: Start regular update task
+    }
+
+    private void AddImage(Item item, int index)
+    {
+        ClickableImage image = new ClickableImage(item, this.folder.StorageClient);
+        clickableImageList.Insert(index, image);
+        image.SetParentNavigation(Navigation);
+        View imageView = image.GetView();
+
+        Application.Current.Dispatcher.Dispatch(() =>
+        {
+            Gallery.Children.Insert(index, imageView);
+        });
+        PreviewsLeftToLoad.Enqueue(image);
+    }
+
+    /// <summary>
+    /// Delete image at index
+    /// </summary>
+    /// <param name="index"></param>
+    private void DeleteImage(int index)
+    {
+        clickableImageList.RemoveAt(index);
+        Application.Current.Dispatcher.Dispatch(() =>
+        {
+            Gallery.Children.RemoveAt(index);
+        });
     }
 
     private async Task LoadPreviews()
@@ -100,7 +166,14 @@ public partial class FolderPage : ContentPage
                     var toast = Toast.Make(text, duration, fontSize);
                     toast.Show();
                 });
+
+                _ = LoadFolderContent();
             });
         });
+    }
+
+    void ReloadButton_Clicked(System.Object sender, System.EventArgs e)
+    {
+        _ = LoadFolderContent();
     }
 }
