@@ -35,7 +35,8 @@ public partial class FullscreenImage : ContentPage
 
 		//Wrapper.Children.Add(pinchZoom);
 		Content = pinchZoom;
-	}
+        Title = item.Name;
+    }
 
 	public bool NextImage()
 	{
