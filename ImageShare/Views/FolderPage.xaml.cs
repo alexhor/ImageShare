@@ -122,7 +122,14 @@ public partial class FolderPage : ContentPage
             {
                 image.DownloadPreviewImage();
             });
-            await task.ConfigureAwait(true);
+            try
+            {
+                await task.ConfigureAwait(true);
+            }
+            catch(AggregateException)
+            {
+                continue;
+            }
         }
     }
 
