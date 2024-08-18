@@ -6,6 +6,7 @@
         x:Name="Wrapper">
 
         <ActivityIndicator
+            x:Name="ImageLoadingIcon"
             IsRunning="True"
             VerticalOptions="Center"
             HorizontalOptions="Center"/>

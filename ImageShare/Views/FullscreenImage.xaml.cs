@@ -1,5 +1,7 @@
 ﻿using Bertuzzi.MAUI.PinchZoomImage;
+using CommunityToolkit.Maui.Converters;
 using ImageShare.Models;
+using Microsoft.Maui.Graphics.Platform;
 
 namespace ImageShare.Views;
 
@@ -7,6 +9,7 @@ public partial class FullscreenImage : ContentPage
 {
 	protected StorageClient storageClient;
     protected Item item;
+	private IDictionary<Item, Image> imageCache = new Dictionary<Item, Image>();
 
 	public FullscreenImage(Item item, StorageClient storageClient)
 	{
@@ -14,28 +17,115 @@ public partial class FullscreenImage : ContentPage
 		Title = item.Name;
 		this.storageClient = storageClient;
         this.item = item;
+		ImageLoadingIcon.SetBinding(ActivityIndicator.IsRunningProperty, "IsLoading");
 
-		Task task = LoadImage(item, storageClient);
+		LoadImage(item);
     }
 
-	private async Task LoadImage(Item item, StorageClient storageClient)
+	private void LoadImage(Item item)
     {
-		Stream stream = await storageClient.GetFullSize(item);
+		Task.Run(async() => {
+			Image image;
 
-        Image image = new Image()
+			if (imageCache.Keys.Contains(item))
+			{
+				image = imageCache[item];
+			}
+			else
+			{
+				// Show loading icon
+				Dispatcher.Dispatch(() => {
+					Content = new ActivityIndicator() {
+						IsRunning = true,
+						VerticalOptions = LayoutOptions.Center,
+						HorizontalOptions = LayoutOptions.Center,
+					};
+					Title = "Loading ...";
+				});
+				// Load full size image
+				Stream stream = await storageClient.GetFullSize(item);
+				StreamImageSource source = (StreamImageSource)ImageSource.FromStream(() => stream);
+				image = new Image()
+				{
+					Source = source,
+				};
+				imageCache[item] = image;
+			}
+
+			Dispatcher.Dispatch(() =>
+			{
+				PinchZoom pinchZoom = new(this)
+				{
+					Content = image,
+				};
+
+				Content = pinchZoom;
+				Title = item.Name;
+				ImageLoadingIcon.BindingContext = image;
+			});
+
+			//UpdateImageCache(item);
+		});
+    }
+
+	private void UpdateImageCache(Item item)
+	{
+		IList<Item> cacheItems = new List<Item>()
 		{
-			Source = ImageSource.FromStream(() => stream),
+			item
 		};
+		int itemIndex = item.ParentFolder.GetImageIndex(item);
 
-
-        PinchZoom pinchZoom = new PinchZoom(this)
+		for (int i = itemIndex - 2; i <= itemIndex + 2; i++)
 		{
-			Content = image,
-        };
+			// Don't cache the already loaded image
+			if (i == itemIndex)
+			{
+                continue;
+			}
 
-		//Wrapper.Children.Add(pinchZoom);
-		Content = pinchZoom;
-        Title = item.Name;
+			Item itemToCache;
+            try
+            {
+                itemToCache = item.ParentFolder.GetImageAt(i);
+            }
+            catch (IndexOutOfRangeException)
+            {
+				continue;
+            }
+			cacheItems.Add(itemToCache);
+
+            if (imageCache.Keys.Contains(itemToCache))
+			{
+				continue;
+			}
+
+			
+            Task<Stream> streamTask = storageClient.GetFullSize(itemToCache);
+			streamTask.ContinueWith((stream) =>
+			{
+                Span<byte> memory = new Span<byte>();
+                stream.Result.Read(memory);
+                MemoryStream memoryStream = new MemoryStream(memory.ToArray());
+
+                Image image = new Image()
+                {
+                    Source = ImageSource.FromStream(() => memoryStream),
+                    //BindingContext = BindingContext,
+                };
+
+                imageCache[itemToCache] = image;
+            });
+        }
+
+		/*
+		foreach (Item cachedItem in imageCache.Keys)
+		{
+			if (!cacheItems.Contains(cachedItem))
+			{
+				imageCache.Remove(cachedItem);
+			}
+		}*/
     }
 
 	public bool NextImage()
@@ -52,7 +142,7 @@ public partial class FullscreenImage : ContentPage
 			return false;
 		}
 		item = nextItem;
-		Task task = LoadImage(nextItem, storageClient);
+		LoadImage(nextItem);
 		return true;
     }
 
@@ -70,7 +160,7 @@ public partial class FullscreenImage : ContentPage
 			return false;
 		}
 		item = previousItem;
-		Task task = LoadImage(previousItem, storageClient);
+		LoadImage(previousItem);
 		return true;
     }
 }

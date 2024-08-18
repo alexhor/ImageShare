@@ -24,6 +24,16 @@ namespace ImageShare.Models
             }
 		}
 
+		public Item GetImageAt(int index)
+		{
+			return imageList[index];
+		}
+
+		public int GetImageIndex(Item item)
+		{
+			return imageList.IndexOf(item);
+		}
+
 		/// <summary>
 		/// Get the next image
 		/// </summary>
